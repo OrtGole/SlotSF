@@ -9,17 +9,13 @@ const BASE_SPINNING_DURATION = 2.7;
 
 /**
  * @type {number} The additional duration to the base duration for each row (in seconds).
- * It makes the typical effect that the first reel ends, then the second, and so on...
  */
 const COLUMN_SPINNING_DURATION = 0.3;
 
-
 var cols;
-
 
 window.addEventListener('DOMContentLoaded', function(event) {
     cols = document.querySelectorAll('.col');
-
     setInitialItems();
 });
 
@@ -28,7 +24,7 @@ function setInitialItems() {
 
     for (let i = 0; i < cols.length; ++i) {
         let col = cols[i];
-        let amountOfItems = baseItemAmount + (i * 3); // Increment the amount for each column
+        let amountOfItems = baseItemAmount + (i * 3);
         let elms = '';
         let firstThreeElms = '';
 
@@ -37,49 +33,35 @@ function setInitialItems() {
             let item = '<div class="icon" data-item="' + icon + '"><img src="items/' + icon + '.png"></div>';
             elms += item;
 
-            if (x < 3) firstThreeElms += item; // Backup the first three items because the last three must be the same
+            if (x < 3) firstThreeElms += item;
         }
         col.innerHTML = elms + firstThreeElms;
     }
 }
 
-/**
- * Called when the start-button is pressed.
- *
- * @param elem The button itself
- */
 function spin(elem) {
     let duration = BASE_SPINNING_DURATION + randomDuration();
 
-    for (let col of cols) { // set the animation duration for each column
+    for (let col of cols) {
         duration += COLUMN_SPINNING_DURATION + randomDuration();
         col.style.animationDuration = duration + "s";
     }
 
-    // disable the start-button
     elem.setAttribute('disabled', true);
-
-    // set the spinning class so the css animation starts to play
     document.getElementById('container').classList.add('spinning');
 
-    // set the result delayed
-    // this would be the right place to request the combination from the server
     window.setTimeout(setResult, BASE_SPINNING_DURATION * 1000 / 2);
 
     window.setTimeout(function () {
-        // after the spinning is done, remove the class and enable the button again
         document.getElementById('container').classList.remove('spinning');
         elem.removeAttribute('disabled');
     }.bind(elem), duration * 1000);
 }
 
-/**
- * Sets the result items at the beginning and the end of the columns
- */
 function setResult() {
-    for (let col of cols) {
+    let finalResults = [];
 
-        // generate 3 random items
+    for (let col of cols) {
         let results = [
             getRandomIcon(),
             getRandomIcon(),
@@ -87,21 +69,62 @@ function setResult() {
         ];
 
         let icons = col.querySelectorAll('.icon img');
-        // replace the first and last three items of each column with the generated items
+
         for (let x = 0; x < 3; x++) {
             icons[x].setAttribute('src', 'items/' + results[x] + '.png');
             icons[(icons.length - 3) + x].setAttribute('src', 'items/' + results[x] + '.png');
         }
+
+        finalResults.push(results);
     }
+
+    checkWin(finalResults);
+}
+
+function checkWin(finalResults) {
+    let firstCol = finalResults[0];
+
+    let isWin = finalResults.every(col =>
+        col[0] === firstCol[0] &&
+        col[1] === firstCol[1] &&
+        col[2] === firstCol[2]
+    );
+
+    let payout = 0;
+
+    if (isWin) {
+        payout = calculatePayout(firstCol);
+        showMessage("🎉 YOU WIN! Payout: " + payout);
+    } else {
+        showMessage("No win — try again!");
+    }
+}
+
+function calculatePayout(symbols) {
+    let icon = symbols[0];
+
+    switch (icon) {
+        case 'lucky_seven': return 500;
+        case 'big_win': return 200;
+        case 'cherry': return 50;
+        default: return 20; // generic 3-of-a-kind payout
+    }
+}
+
+function showMessage(msg) {
+    const box = document.getElementById("resultBox");
+    box.innerText = msg;
+    box.classList.add("show");
+
+    setTimeout(() => {
+        box.classList.remove("show");
+    }, 3000);
 }
 
 function getRandomIcon() {
     return ICONS[Math.floor(Math.random() * ICONS.length)];
 }
 
-/**
- * @returns {number} 0.00 to 0.09 inclusive
- */
 function randomDuration() {
     return Math.floor(Math.random() * 10) / 100;
 }
