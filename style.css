@@ -2,6 +2,10 @@
  * Some general styling
  */
 
+p {
+    color: red
+}
+
 * {
     box-sizing: border-box;
 }
