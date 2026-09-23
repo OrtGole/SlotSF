@@ -1,11 +1,11 @@
 const ICONS = [
-     'big_win', 'cherry', 'lemon', 'lucky_seven',
+     'big_win', 'lemon', 'lucky_seven',
 ];
 
 /**
  * @type {number} The minimum spin time in seconds
  */
-const BASE_SPINNING_DURATION = 2.7;
+const BASE_SPINNING_DURATION = 2.4;
 
 /**
  * @type {number} The additional duration to the base duration for each row (in seconds).
