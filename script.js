@@ -1,5 +1,5 @@
 const ICONS = [
-    'apple', 'big_win', 'cherry', 'lemon', 'lucky_seven', 'orange', 'watermelon',
+     'big_win', 'cherry', 'lemon', 'lucky_seven',
 ];
 
 /**
@@ -10,7 +10,7 @@ const BASE_SPINNING_DURATION = 2.7;
 /**
  * @type {number} The additional duration to the base duration for each row (in seconds).
  */
-const COLUMN_SPINNING_DURATION = 0.3;
+const COLUMN_SPINNING_DURATION = 0.1;
 
 var cols;
 
